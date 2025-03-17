@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="title">
+    <h4>قائمة الكوبونات</h4>
+    <div class="">
+        <a href="#" class="btn btn-primary">استيراد البيانات </a>
+        <a href="{% url "add-coupon" %}" class="btn btn-danger">اضافة </a>
+    </div>
+
+</div>
+
+<!-- frame -->
+<div class="frame d-block">
+    <!-- Premier formulaire -->
+    <div class="d-flex search">
+        <form class="form-inline d-flex" method="post">
+            <button type="reset" onclick="window.location.reload()" class="btn btn-danger mb-2">X</button>
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="searchField" placeholder="بحث ...">
+            </div>
+        </form>
+
+                <div>
+            <button class="btn btn-light">
+                <img src="{% static 'img/pdf.png' %}" alt="" width="27" height="27">
+            </button>
+            <button class="btn btn-light">
+                <img src="{% static 'img/excel.png' %}" alt="" width="27" height="27">
+            </button>
+        </div>
+    </div>
+
+    <hr>
+
+
+
+{% include "partials/_messages.html" %}
+
+    <!-- Formulaire supprimé et intégré directement dans le thead -->
+    <table class="table w-100 app-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>
+                    الكود
+                </th>
+                <th>
+                    نسبة الخصم
+                </th>
+                <th>
+
+                    مرات الاستخدام
+                </th>
+                <th>
+                    الحالة
+                </th>
+                <th>
+                    التاريخ
+                </th>
+                <th>
+                    الإجراء
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coupon in coupons %}
+            <tr>
+                <td>{{ coupon.id }}</td>
+                <td style="width: 15%;">{{ coupon.code }}</td>
+                <td style="width: 15%;">{{ coupon.discount_percentage }}%</td>
+                <td style="width: 15%;">{{ coupon.use_number }}</td>
+                <td style="width: 15%;">{{ coupon.status }}</td>
+                <td style="width: 15%;">{{ coupon.created_at |date:'Y/m/d' }}</td>
+                <td style="width: 15%;">
+
+                    <a href="{% url "update-coupon" coupon.id %}" class="btn btn-outline-success btn-sm">
+                        <ion-icon name="create-outline"></ion-icon>
+                    </a>
+                    <a href="{% url "delete-coupon" coupon.id %}" class="btn btn-outline-danger btn-sm">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+    <div class="pagination-container">
+
+        <nav aria-label="Page navigation ">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="">
+                    <a class="" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                        <span class="">الاول</span>
+                    </a>
+                </li>
+                <li class=" ">
+                    <a class="" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="">السابق</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class=" disabled">
+                    <span class="">&laquo;&laquo;</span>
+                </li>
+                <li class=" disabled">
+                    <span class="">السابق</span>
+                </li>
+                {% endif %}
+
+                <li class="  px-5 text-center w-70">
+                    <span class=" text-body">
+                        الصفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="">
+                    <a class="" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="">التالي</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a class="" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                        <span class="">الاخير</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class=" disabled">
+                    <span class="">التالي</span>
+                </li>
+                <li class=" disabled">
+                    <span class="">&raquo;&raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+
+</div>
+{% endblock %}

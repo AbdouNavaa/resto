@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="bg-light title">
+    <h4>قائمة الاقسام</h4>
+    <div class="">
+        <a href="#" class="btn btn-primary">استيراد البيانات </a>
+        <a href="{% url "add-category" %}" class="btn btn-danger">اضافة قسم</a>
+    </div>
+
+</div>
+
+<!-- frame -->
+<div class="frame d-block">
+    <!-- Premier formulaire -->
+    <div class="d-flex search">
+        <form class="form-inline d-flex" action="{% url 'search-categories' %}" method="post">
+            <a href="{% url 'categories' %}" class="btn btn-danger mb-2">X</a>
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" name="query" id="searchField" placeholder="بحث ...">
+            </div>
+            <!-- <button type="submit" class="btn btn-primary">بحث</button> -->
+        </form>
+
+        <div>
+            <button class="btn btn-light">
+                <img src="{% static 'img/pdf.png' %}" alt="" width="27" height="27">
+            </button>
+            <button class="btn btn-light">
+                <img src="{% static 'img/excel.png' %}" alt="" width="27" height="27">
+            </button>
+        </div>
+    </div>
+
+    <hr>
+
+
+
+{% include "partials/_messages.html" %}
+
+    <!-- Formulaire supprimé et intégré directement dans le thead -->
+    <table class="table w-100 app-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>
+                    الاسم
+                </th>
+                <th>
+                    عدد المنتجات
+                </th>
+                <th>
+                    التاريخ
+                </th>
+                <th>
+                    الإجراء
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td style="width: 15%;">{{ category.id }}</td>
+                <td style="width: 15%;">{{ category.name }}</td>
+                <td style="width: 15%;">{{ category.dish_count }}</td>
+                <td style="width: 15%;">{{ category.created_at |date:'Y/m/d' }}</td>
+                <td style="width: 15%;">
+                    <a href="{% url "update-category" category.id %}" class="btn btn-outline-success btn-sm">
+                        <ion-icon name="create-outline"></ion-icon>
+                    </a>
+                    <a href="{% url "delete-category" category.id %}" class="btn btn-outline-danger btn-sm">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p class="no-result" style="display: none;">No data available</p>
+
+    <table class="table w-100 table-output">
+        <thead>
+            <tr>
+                <th>
+                    <!-- <form action="" method="post">
+                    <input type="text" id="searchField" class="form-control mt-1" placeholder="ابحث...">
+                </form> -->
+                    الاسم
+                </th>
+
+                <th>
+                    عدد المنتجات
+                </th>
+                <th>
+                    <!-- <input type="date" class="form-control mt-1"> -->
+                    التاريخ
+                </th>
+                <th>
+                    <!-- <button class="btn btn-danger mt-1">
+                    <ion-icon name="search-outline"></ion-icon>
+                </button> -->
+                    الإجراء
+                </th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+        </tbody>
+    </table>
+
+    <div class="pagination-container">
+
+        <nav aria-label="Page navigation ">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="">
+                    <a class="" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                        <span class="">الاول</span>
+                    </a>
+                </li>
+                <li class=" ">
+                    <a class="" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="">السابق</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class=" disabled">
+                    <span class="">&laquo;&laquo;</span>
+                </li>
+                <li class=" disabled">
+                    <span class="">السابق</span>
+                </li>
+                {% endif %}
+
+                <li class="  px-5 text-center w-70">
+                    <span class=" text-body">
+                        الصفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="">
+                    <a class="" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="">التالي</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a class="" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                        <span class="">الاخير</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class=" disabled">
+                    <span class="">التالي</span>
+                </li>
+                <li class=" disabled">
+                    <span class="">&raquo;&raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+
+</div>
+<script src="{% static 'js/search_categories.js' %}">
+</script>
+{% endblock %}

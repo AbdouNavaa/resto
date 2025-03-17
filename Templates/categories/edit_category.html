@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h4 class="mr-3"> اضافة وجبات</h4>
+
+<!-- Frame -->
+<div class="frame d-block p-4 shadow-sm bg-white rounded">
+
+    <!-- Upload Photo -->
+    
+    <!-- Formulaire -->
+    <form action="{% url 'update-category' category.id %}" method="post" enctype="multipart/form-data" class="form">
+        <div class="text-center mb-4">
+            <!-- Image cliquable -->
+            <label for="image-upload" style="cursor: pointer;">
+                <img id="preview-image" src="{{values.image.url}}"  alt="Photo"  
+                class="img-thumbnail rounded-circle" width="150" height="150">
+            </label>
+            <!-- Champ de fichier masqué -->
+            <input type="file" id="image-upload" value="{{values.image.url}}" 
+            name="image" accept="image/*" style="display: none;">
+        </div>
+        {% csrf_token %}
+        {% include "partials/_messages.html" %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="name" class="form-label">الاسم</label>
+                <input type="text" value="{{values.name}}" name="name" id="name" class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label for="date" class="form-label">التاريخ</label>
+                <input type="date" value="{{ values.created_at| date:"Y-m-d"}}" name="created_at" id="date" class="form-control">
+            </div>
+        </div>
+    
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript pour la prévisualisation de l'image -->
+<script>
+    document.getElementById('image-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-image').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

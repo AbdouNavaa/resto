@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h4 class="mr-3"> اضافة وجبات</h4>
+
+<!-- Frame -->
+<div class="frame d-block p-4 shadow-sm bg-white rounded">
+
+    <!-- Upload Photo -->
+    
+    <!-- Formulaire -->
+    <form action="{% url 'add-dishe' %}" method="post" enctype="multipart/form-data" class="form">
+        <div class="text-center mb-4">
+            <!-- Image cliquable -->
+            <label for="image-upload" style="cursor: pointer;">
+                <img id="preview-image" src="{% static 'img/avatar.png' %}" alt="Photo" class="img-thumbnail rounded-circle" width="150" height="150">
+            </label>
+            <!-- Champ de fichier masqué -->
+            <input type="file" id="image-upload" name="image" accept="image/*" style="display: none;">
+        </div>
+        {% csrf_token %}
+        {% include "partials/_messages.html" %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="name" class="form-label">الاسم</label>
+                <input type="text" value="{{ values.name }}" name="name" id="name" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label for="price" class="form-label">السعر</label>
+                <input type="text" value="{{ values.price }}" name="price" id="price" class="form-control">
+            </div>
+        </div>
+    
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="category" class="form-label">القسم</label>
+                <select name="category" id="category" class="form-select">
+                    {% for category in categories %}
+                    <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="date" class="form-label">التاريخ</label>
+                <input type="date" value="{{ values.created_at }}" name="created_at" id="date" class="form-control">
+            </div>
+        </div>
+    
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary mt-3 col-md-2">حفظ</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript pour la prévisualisation de l'image -->
+<script>
+    document.getElementById('image-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-image').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+<script src="{% static 'js/search.js' %}"></script>
+{% endblock %}

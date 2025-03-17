@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="title">
+    <h4>قائمة الوجبات</h4>
+    <div class="">
+        <a href="#" class="btn btn-primary">استيراد البيانات </a>
+        <a href="{% url "add-dishe" %}" class="btn btn-danger">اضافة وجبة</a>
+    </div>
+</div>
+
+<div class="frame d-block">
+    <div class="d-flex search">
+        <form class="form-inline d-flex" action="{% url 'search-orders' %}" method="post">
+            <a href="{% url 'order_list' %}" class="btn btn-danger mb-2">X</a>
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" name="query" id="searchField" placeholder="بحث ...">
+            </div>
+            <!-- <button type="submit" class="btn btn-primary">بحث</button> -->
+        </form>
+
+        <div>
+            <button class="btn btn-light">
+                <img src="{% static 'img/pdf.png' %}" alt="" width="27" height="27">
+            </button>
+            <button class="btn btn-light">
+                <img src="{% static 'img/excel.png' %}" alt="" width="27" height="27">
+            </button>
+        </div>
+    </div>
+
+    <hr>
+
+<!-- Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="detailsModalLabel">تفاصيل الطلب</h5>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <p class="text-center">جارٍ تحميل البيانات...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% include "partials/_messages.html" %}
+
+    <table class="table w-100 app-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم المستخدم</th>
+                <th>نوع الطلب</th>
+                <th>السعر</th>
+                <th>الحالة</th>
+                <th>التاريخ</th>
+                <th>الإجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.get_order_type_display }}</td>
+                <td>{{ order.total_price }} €</td>
+                <td>
+                    <form method="post" action="{% url 'update_order' order.id %}">
+                        {% csrf_token %}
+                        <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                            <option selected value="{{ order.status }}">
+                                {{ order.status }}</option>
+                            <option value="قيد التنفيذ">قيد التنفيذ</option>
+                            <option value="في الطريق">في الطريق</option>
+                            <option value="تم التأكيد">تم التأكيد</option>
+                            <option value="تم الالغاء">تم الالغاء</option>
+                        </select>
+                    </form>
+                </td>
+                <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <button class="btn btn-outline-info btn-sm" onclick="fetchOrderItems({{ order.id }})">
+                        <ion-icon name="information-circle-outline"></ion-icon> تفاصيل
+                    </button>
+                    <a href="{% url "delete_order" order.id %}" class="btn btn-outline-danger btn-sm">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;&laquo;</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;</span>
+                    </li>
+                {% endif %}
+    
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+    
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="pagination-info">
+            الصفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Custom Script -->
+<script>
+    function fetchOrderItems(orderId) {
+        fetch(`/orders/items/${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('fdsfds',data.order_items)
+                console.log( data.order)
+                console.log( data.payments)
+                openDetailsModal(data.order_items, data.order,data.payments);
+            })
+            .catch(error => console.error("Error loading items:", error));
+    }
+
+    function openDetailsModal(orderItems, orderDetails,order_payments) {
+        let modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = '';
+
+        if (orderItems.length === 0) {
+            modalBody.innerHTML = '<p class="text-center">لا توجد عناصر لهذا الطلب.</p>';
+        } else {
+            console.log('Pay:',order_payments.payment_method)
+            let modalContent = `
+                <div class="row">
+                    <!-- Order Details -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">معلومات الطلب</h6>
+                            </div>
+                            <div class="card-body ">
+                                <p><strong>رقم الطلب:</strong> ${orderDetails.id}</p>
+                                <p><strong>نوع الطلب:</strong> ${orderDetails.order_type}</p>
+                                <p><strong>الحالة:</strong> ${orderDetails.status}</p>
+                                ${orderDetails.table ? `<p><strong>الطاولة:</strong> الطاولة ${orderDetails.table}</p>` : ''}
+                                ${orderDetails.delivery_address ? `<p><strong>عنوان التوصيل:</strong> ${orderDetails.delivery_address}</p>` : ''}
+                                ${orderDetails.phone_number ? `<p><strong>رقم الهاتف:</strong> ${orderDetails.phone_number}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">ملخص الطلب</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>إجمالي الطلب:</strong> ${orderDetails.total_price.toFixed(2)} €</p>
+                                <p><strong>طريقة الدفع:</strong> ${order_payments[0].payment_method}</p>
+                                <p><strong>تاريخ الإنشاء:</strong> ${new Date(orderDetails.created_at).toLocaleString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="card-title mb-0">العناصر المطلوبة</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الصورة</th>
+                                        <th>الاسم</th>
+                                        <th>الكمية</th>
+                                        <th>السعر</th>
+                                        <th>المجموع</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+
+            let totalQuantity = 0;
+            let totalPrice = 0;
+            let grandTotal = 0;
+
+            orderItems.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                totalQuantity += item.quantity;
+                totalPrice += item.price;
+                grandTotal += itemTotal;
+
+                modalContent += `
+                    <tr>
+                        <td>
+                            <img src="${item.dish__image}" alt="${item.dish__name}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>${item.dish__name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price.toFixed(2)} €</td>
+                        <td>${itemTotal.toFixed(2)} €</td>
+                    </tr>
+                `;
+            });
+
+            modalContent += `
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="2"><strong>المجموع</strong></td>
+                                        <td><strong>${totalQuantity}</strong></td>
+                                        <td><strong>${totalPrice.toFixed(2)} €</strong></td>
+                                        <td><strong>${grandTotal.toFixed(2)} €</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modalBody.innerHTML = modalContent;
+        }
+
+        var detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        detailsModal.show();
+    }
+</script>
+
+{% endblock %}

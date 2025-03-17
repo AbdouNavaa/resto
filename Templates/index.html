@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!-- Vos cartes existantes -->
+<div class="cardBox">
+
+    <div class="card1" style="background-color: #3498db;">
+        <div class="iconBx">
+            <ion-icon name="fast-food-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{dishes.count}}</div>
+            <div class="cardName">إجمالي الوجبات</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #2ecc71;">
+        <div class="iconBx">
+            <ion-icon name="grid-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{categories.count}}</div>
+            <div class="cardName">إجمالي الأقسام</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #f1c40f;">
+        <div class="iconBx">
+            <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{users.count}}</div>
+            <div class="cardName">إجمالي الموظفين</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #9b59b6;">
+        <div class="iconBx">
+            <ion-icon name="pricetag-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{coupons.count}}</div>
+            <div class="cardName">إجمالي الكوبونات</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #e74c3c;">
+        <div class="iconBx">
+            <ion-icon name="hourglass-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{orders_in_progress.count}}</div>
+            <div class="cardName">طلبات قيد التنفيذ</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #34495e;">
+        <div class="iconBx">
+            <ion-icon name="trending-up-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{total_price}}</div>
+            <div class="cardName">أرباح اليوم</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #1abc9c;">
+        <div class="iconBx">
+            <ion-icon name="layers-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{available_tables.count}}</div>
+            <div class="cardName">الطاولات المتاحة</div>
+        </div>
+    </div>
+
+    <div class="card1" style="background-color: #e67e22;">
+        <div class="iconBx">
+            <ion-icon name="today-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="numbers">{{today_orders.count}}</div>
+            <div class="cardName">طلبات اليوم</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Graphique -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Inclure Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Récupérer les données passées depuis la vue
+    const monthsData = {{ months_data|safe }};
+
+    // Préparer les données pour Chart.js
+    const labels = monthsData.map(data => data.month);
+    const totalOrders = monthsData.map(data => data.total_orders);
+    const totalRevenue = monthsData.map(data => data.total_revenue);
+
+    // Créer le graphique
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(ctx, {
+        type: 'line',  // Type de graphique (bar, line, etc.)
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Nombre de commandes',
+                    data: totalOrders,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',  // Couleur des barres
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Revenu total',
+                    data: totalRevenue,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',  // Couleur des barres
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Statistiques mensuelles (commandes et revenus)'
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
