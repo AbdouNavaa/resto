@@ -115,11 +115,18 @@
                     </a>
                     <a href="">
                         <ion-icon name="settings-outline"></ion-icon>
-                        الإعدادات</a>
-
+                        الإعدادات
+                    </a>
                     <a href="{% url "login" %}">
                         <ion-icon name="log-out-outline"></ion-icon>
-                        تسجيل خروج</a>
+                        تسجيل خروج
+                    </a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}">
+                            <ion-icon name="shield-outline"></ion-icon>
+                            لوحة الإدارة
+                        </a>
+                    {% endif %}
                 </div>
             </div>
 

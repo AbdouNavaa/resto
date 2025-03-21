@@ -558,7 +558,7 @@ center{
 }
 
 .user-dropdown {
-    display: none;
+    display: NONE;
     position: absolute;
     left: 0;
     right: -95px;
@@ -575,10 +575,10 @@ center{
     text-decoration: none;
     display: block;
 }
-.user-dropdown a:last-child::before{
+.user-dropdown a:nth-child(3):before{
     content: "";
     position: absolute;
-    top: 65%;
+    top: 80px;
     left: 0;
     width: 100%;
     height: 1px;
@@ -640,4 +640,15 @@ center{
     margin-top: 1rem;
     color: #6c757d;
 }
+
+    .payment-method-btn {
+        transition: background-color 0.3s ease;
+    }
+    .payment-method-btn.selected {
+        background-color: var(--gray);
+        color: white;
+    }
+    .payment-method-btn.selected h6 {
+        color: black;
+    }
 </style>

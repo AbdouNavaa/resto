@@ -23,12 +23,12 @@
         </form>
 
         <div>
-            <button class="btn btn-light">
+            <a href="{% url 'export_to_pdf' %}" class="btn btn-light">
                 <img src="{% static 'img/pdf.png' %}" alt="" width="27" height="27">
-            </button>
-            <button class="btn btn-light">
+            </a>
+            <a href="{% url 'export_to_excel' %}" class="btn btn-light">
                 <img src="{% static 'img/excel.png' %}" alt="" width="27" height="27">
-            </button>
+            </a>
         </div>
     </div>
 

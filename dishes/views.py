@@ -128,3 +128,37 @@ def delete_dish(request,id):
     dish.delete()
     messages.success(request, 'Plat supprimé avec succès')
     return redirect('dishes')
+
+# export as excel
+
+from django.http import HttpResponse
+import pandas as pd
+
+def export_to_excel(request):
+    dishes = Dish.objects.all()
+    df = pd.DataFrame(list(dishes.values('id', 'name', 'price',  'category__name')))
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=dishes.xlsx'
+    df.to_excel(response, index=False)
+    messages.success(request, 'تمت لتحميل')
+    return response
+
+# to pdf
+
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+def export_to_pdf(request):
+    dishes = Dish.objects.all()
+    print('Dish_name: ',dishes[0].name)
+    template = get_template('dishes/pdf_template.html')
+    html = template.render({'dishes': dishes})
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="dishes.pdf"'
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

@@ -125,24 +125,24 @@
 
                         <!-- Dine In Section -->
                         <!-- Dine In Section -->
-<div id="dine_in_section" class="mb-4" style="display: none;">
-    <select class="form-select" name="table">
-        <option value="" selected>الطاولات المتاحة</option>
-        {% for table in tables %}
-        <option value="{{ table.id }}">الطاولة {{ table.number }}</option>
-        {% endfor %}
-    </select>
-</div>
-<!-- Take Out Section -->
-<div id="take_out_section" class="mb-4" style="display: none;">
-    <input type="datetime-local" class="form-control" name="pickup_time">
-</div>
+                        <div id="dine_in_section" class="mb-4" style="display: none;">
+                            <select class="form-select" name="table">
+                                <option value="" selected>الطاولات المتاحة</option>
+                                {% for table in tables %}
+                                <option value="{{ table.id }}">الطاولة {{ table.number }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Take Out Section -->
+                        <div id="take_out_section" class="mb-4" style="display: none;">
+                            <input type="datetime-local" class="form-control" name="pickup_time">
+                        </div>
 
-<!-- Delivery Section -->
-<div id="delivery_section" class="mb-4" style="display: none;">
-    <input type="text" class="form-control mb-2" name="delivery_address" placeholder="العنوان">
-    <input type="text" class="form-control" name="phone_number" placeholder="رقم الهاتف">
-</div>
+                        <!-- Delivery Section -->
+                        <div id="delivery_section" class="mb-4" style="display: none;">
+                            <input type="text" class="form-control mb-2" name="delivery_address" placeholder="العنوان">
+                            <input type="text" class="form-control" name="phone_number" placeholder="رقم الهاتف">
+                        </div>
 
                         <!-- Order Summary -->
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -184,31 +184,31 @@
                     </form>
 
                     <!-- Order Type Selection -->
-                     <hr class="my-2">
-                     <h4 class="card-title" style="font-size: 14px;">طريفة الدفع</h4>
+                    <hr class="my-2">
+                    <h4 class="card-title" style="font-size: 14px;">طريفة الدفع</h4>
 
                     <div class="order-type mb-4">
                         <div class="row g-2">
                             <div class="col-4">
-                                <button type="button" class="card h-75 w-100 pb-2" onclick="selectPaymentMethod('cash')">
+                                <button type="button" class="card h-75 w-100 pb-2 payment-method-btn" data-method="cash" onclick="selectPaymentMethod('cash')">
                                     <div class="card-body text-center">
-                                        <img src="{% static 'img/pay.png' %}" alt="Cash" class="img-fluid mb-2" style="height: 35px;">
+                                        <img src="{% static 'img/pay.png' %}" alt="Cash" class=" mb-2" style="max-height: 27px;">
                                         <h6 class="card-title" style="font-size: 14px;">كاش</h6>
                                     </div>
                                 </button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="card h-75 w-100 pb-2" onclick="selectPaymentMethod('card')">
+                                <button type="button" class="card h-75 w-100 pb-2 payment-method-btn" data-method="card" onclick="selectPaymentMethod('card')">
                                     <div class="card-body text-center">
-                                        <img src="{% static 'img/credit-card.png' %}" alt="Card" class="img-fluid mb-2" style="height: 35px;">
-                                        <h6 class="card-title" style="font-size: 14px;"> بطاقة ائتمان</h6>
+                                        <img src="{% static 'img/credit-card.png' %}" alt="Card" class=" mb-2" style="max-height: 27px;">
+                                        <h6 class="card-title" style="font-size: 14px;"> بطاقة ائتمان</h6>
                                     </div>
                                 </button>
                             </div>
                             <div class="col-4">
-                                <button type="button" class="card h-75 w-100 pb-2" onclick="selectPaymentMethod('online')">
+                                <button type="button" class="card h-75 w-100 pb-2 payment-method-btn" data-method="online" onclick="selectPaymentMethod('online')">
                                     <div class="card-body text-center">
-                                        <img src="{% static 'img/wallet.png' %}" alt="Online" class="img-fluid mb-2" style="height: 35px;">
+                                        <img src="{% static 'img/wallet.png' %}" alt="Online" class=" mb-2" style="max-height: 27px;">
                                         <h6 class="card-title" style="font-size: 14px;">محفظة الكترونية</h6>
                                     </div>
                                 </button>
@@ -255,6 +255,17 @@ function selectOrderType(type) {
     function selectPaymentMethod(method) {
         // Set the payment method in the hidden input
         document.getElementById('payment_method').value = method;
+
+        // Remove the 'selected' class from all payment method buttons
+        document.querySelectorAll('.payment-method-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add the 'selected' class to the clicked button
+        const selectedBtn = document.querySelector(`.payment-method-btn[data-method="${method}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('selected');
+        }
     }
 </script>
 <!-- Toastify CSS -->
