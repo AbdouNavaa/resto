@@ -1,50 +1,67 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<h4 class="mr-3"> اضافة </h4>
+<div class="add-user-container">
+    <h4 class="add-user-title"> اضافة مستخدم جديد</h4>
 
-<!-- Frame -->
-<div class="row mb-3">
-    <div class="col-md-3">
+    <div class="form-wrapper">
+        <form action="{% url 'add-user' %}" method="post" enctype="multipart/form-data"  class="add-user-form">
+            <div class="text-center mb-4">
+                <!-- Image cliquable -->
+                <label for="image-upload" style="cursor: pointer;">
+                    <img id="preview-image" src="{{values.image.url}}"  alt="Photo"  
+                    class="img-thumbnail rounded-circle" width="150" height="150">
+                </label>
+                <!-- Champ de fichier masqué -->
+                <input type="file" id="image-upload" value="{{values.image.url}}" 
+                name="image" accept="image/*" style="display: none;">
+            </div>
+            {% csrf_token %}
+            {% include "partials/_messages.html" %}
 
-    </div>
-    <div class="col-md-6">
-
-<div class="frame d-block p-4 shadow-sm bg-white rounded">
-
-    <!-- Upload Photo -->
-    
-    <!-- Formulaire -->
-    <form action="{% url 'add-user' %}" method="post" class="form">
-        {% csrf_token %}
-        {% include "partials/_messages.html" %}
-                <div>
-                    <label for="username" class="form-label">الاسم</label>
+            <div class="form-group">
+                <label for="username" class="form-label">الاسم</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
                     <input type="text" value="{{ values.username }}" name="username" id="username" class="form-control">
                 </div>
-                <div>
-                    <label for="password" class="form-label">بريد الكتروني</label>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">بريد الكتروني</label>
+                <div class="input-icon">
+                    <i class="fas fa-envelope"></i>
                     <input type="email" value="{{ values.email }}" name="email" id="email" class="form-control">
                 </div>
-                <div>
-                    <label for="password" class="form-label">كلمة المرور</label>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">كلمة المرور</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
                     <input type="password" value="{{ values.password }}" name="password" id="password" class="form-control">
                 </div>
+            </div>
 
-                
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary mt-3 form-control">حفظ</button>
-                </div>
-                
-            </form>
-        </div>
-        </div>
-
-        <div class="col-md-3">
-
-        </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-save">
+                    حفظ <i class="fas fa-save"></i> 
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-
+<script>
+    document.getElementById('image-upload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-image').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 {% endblock %}

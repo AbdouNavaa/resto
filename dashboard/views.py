@@ -4,6 +4,7 @@ from categories.models import Category
 from coupons.models import Coupon
 from users.models import User
 from orders.models import Order
+from order_items.models import OrderItem
 from tables.models import Table
 from datetime import datetime
 
@@ -39,6 +40,62 @@ def index(request):
         })
 
     months_data.reverse()  # Pour afficher du plus ancien au plus récent
+    
+    # tables
+    tables = Table.objects.all()
+    available_tables = Table.objects.filter(status='متاحة')
+    busy_tables = Table.objects.filter(status='محجوزة')
+    tables_data = []
+    tables_data.append({
+        'available_tables': available_tables.count(),
+        'busy_tables': busy_tables.count(),
+    })
+    
+    # print('Tables :',tables_data)
+    
+    # orders
+    orders = Order.objects.all()
+    delivery_orders = Order.objects.filter(order_type='delivery')
+    take_out_orders = Order.objects.filter(order_type='take_out')
+    dine_in_orders = Order.objects.filter(order_type='dine_in')
+    orders_data = []
+    orders_data.append({
+        'delivery_orders': delivery_orders.count(),
+        'take_out_orders': take_out_orders.count(),
+        'dine_in_orders': dine_in_orders.count(),
+    })
+    # print('Orders :', orders_data)
+    
+    # categories
+    categories = Category.objects.all()
+    dishes_by_category = Dish.objects.values('category').annotate(count=Count('id')).order_by('-count')
+    categories_data = []
+    for category in categories:
+        dishes_count = dishes_by_category.filter(category=category).first()['count']
+        categories_data.append({
+            'category': category.name,
+            'dishes_count': dishes_count,
+        })
+    # print('Categories :', categories_data)
+    
+    # dishes in orders
+    all_orders = OrderItem.objects.all()
+    dishes_in_orders = []
+    for order_item in all_orders:
+        dish = order_item.dish
+        if dish not in dishes_in_orders:
+            dishes_in_orders.append(dish)
+    dishes_in_orders_data = []
+    for dish in dishes_in_orders:
+        orders_count = all_orders.filter(dish=dish).count()
+        dishes_in_orders_data.append({
+            'dish': dish.name,
+            'orders_count': orders_count,
+        })
+    # print('Dishes in orders :', dishes_in_orders_data)
+    
+    
+
 
     return render(request, 'index.html', {
         'dishes': dishes,
@@ -50,4 +107,9 @@ def index(request):
         'orders_in_progress': orders_in_progress,
         'tables': tables,
         'months_data': months_data,  # Données pour le graphique
+        'tables_data': tables_data,
+        'orders_data': orders_data,
+        'categories_data': categories_data,
+        'dishes_in_orders_data': dishes_in_orders_data,  # Données pour le graphique
+        
     })

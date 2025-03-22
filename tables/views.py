@@ -6,10 +6,14 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 # Create your views here.
 from django.db.models import Count
+from django.core.paginator import Paginator
 
 def index(request):
     tables = Table.objects.all()
-    return render(request, 'tables/index.html', {'tables': tables})
+    paginator = Paginator(tables, 5)  # Show 5 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'tables/index.html', {'tables': page_obj,'page_obj': page_obj,})
 # search
 
 

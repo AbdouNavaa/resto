@@ -9,7 +9,7 @@ def index(request):
     paginator = Paginator(users, 5)  # Show 5 users per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'users/index.html', {'users': users,'page_obj': page_obj, 'users': page_obj})
+    return render(request, 'users/index.html', {'page_obj': page_obj, 'users': page_obj})
 
 # create
 def create(request):
@@ -19,7 +19,9 @@ def create(request):
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        User.objects.create(username=username, email=email, password=password)
+        image = request.FILES.get('image')  # Utilisez .get() pour éviter KeyError si le champ est vide
+        print(request.FILES)  # Vérifiez si le fichier image est bien reçu
+        User.objects.create(username=username, email=email, password=password,image=image)
         return redirect('users')
 
 # update

@@ -84,28 +84,69 @@
         </div>
     </div>
 
-</div>
-
 <!-- Graphique -->
-<div class="row">
-    <div class="col-md-8">
-        <div class="chart-container">
-            <canvas id="monthlyChart"></canvas>
 
+</div>
+
+<!-- Graphiques -->
+<div class="row mt-2">
+    <!-- Premier graphique -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="monthlyChart"></canvas>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="chart-container">
-            <canvas id="revenueChart"></canvas>
+    <!-- Deuxième graphique -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="dishes_in_orders_dataChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="row mt-2">
+    <!-- Troisième graphique -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="tableChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Quatrième graphique -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="orderChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2">
+    <!-- Cinquième graphique -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <!-- Inclure Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Récupérer les données passées depuis la vue
     const monthsData = {{ months_data|safe }};
+    console.log(monthsData);
 
     // Préparer les données pour Chart.js
     const labels = monthsData.map(data => data.month);
@@ -120,14 +161,14 @@
             labels: labels,
             datasets: [
                 {
-                    label: 'Nombre de commandes',
+                    label: 'عدد الطلبات',
                     data: totalOrders,
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',  // Couleur des barres
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1,
                 },
                 {
-                    label: 'Revenu total',
+                    label: 'اجمالي لبربح',
                     data: totalRevenue,
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',  // Couleur des barres
                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -148,11 +189,229 @@
                 },
                 title: {
                     display: true,
-                    text: 'Statistiques mensuelles (commandes et revenus)'
+                    text: 'الارباح الشهرية',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Arial',
+
+                    },
+
+                    
                 }
             }
         }
     });
 </script>
+<script>
+    // Récupérer les données passées depuis la vue
+    const tablesData = {{ tables_data|safe }};
+    
+    console.log(tablesData);
+    // Préparer les données pour Chart.js
+    const available_tables= tablesData.map(data => data.available_tables);
+    const busy_tables = tablesData.map(data => data.busy_tables);
 
+    // Créer le graphique
+    const ctx1 = document.getElementById('tableChart').getContext('2d');
+    <!-- doughutChart -->
+        const tableChart = new Chart(ctx1, {
+        type: 'doughnut',  // Type de graphique (bar, line, etc.)
+        data: {
+            labels: ['الطاولات المتاحة', 'الطاولات المشغولة'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [available_tables, busy_tables],
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+                ],
+                hoverOffset: 4
+            }]
+            },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'الطاولات',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Arial',
+
+                    },
+
+                    
+                }
+            }
+        }
+    });
+</script>
+<script>
+    // Récupérer les données passées depuis la vue
+    const ordersData = {{ orders_data|safe }};
+    
+    console.log(ordersData);
+    // Préparer les données pour Chart.js
+    const delivery_orders= ordersData.map(data => data.delivery_orders);
+    const take_out_orders = ordersData.map(data => data.take_out_orders);
+    const dine_in_orders = ordersData.map(data => data.dine_in_orders);
+
+    // Créer le graphique
+    const ctx2 = document.getElementById('orderChart').getContext('2d');
+    <!-- pieChart -->
+        const orderChart = new Chart(ctx2, {
+        type: 'pie',  // Type de graphique (bar, line, etc.)
+        data: {
+            labels: ['طلبات التسليم', 'طلبات التجهيز', 'طلبات التناول'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [delivery_orders, take_out_orders, dine_in_orders],
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+                ],
+                hoverOffset: 4
+            }]
+            },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'طلبات',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Arial',
+
+                    },
+                    
+                }
+            }
+        }
+    });
+    
+</script>
+
+<!-- categories graph -->
+<script>
+    // Récupérer les données passées depuis la vue
+    const categoriesData = {{ categories_data|safe }};
+    
+    console.log(categoriesData);
+    // Préparer les données pour Chart.js
+    const category= categoriesData.map(data => data.category);
+    const dishes_count = categoriesData.map(data => data.dishes_count);
+
+    // Créer le graphique
+    const ctx3 = document.getElementById('categoriesChart').getContext('2d');
+    <!-- doughutChart -->
+        const categoriesChart = new Chart(ctx3, {
+        type: 'bar',  // Type de graphique (bar, line, etc.)
+        data: {
+            labels: category,
+            datasets: [{
+                label: 'عدد الوجبات',
+                data: dishes_count,
+                backgroundColor: [
+                'rgb(54, 162, 235)'
+                ],
+                hoverOffset: 4
+            }]
+            },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'احصائيات الاقسام',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Arial',
+
+                    },
+                    
+                }
+            }
+        }
+    });
+    
+</script>
+
+<!-- dishes_in_orders_data graph -->
+<script>
+    // Récupérer les données passées depuis la vue
+    const dishes_in_orders_data = {{ dishes_in_orders_data|safe }};
+    
+    console.log(dishes_in_orders_data);
+    // Préparer les données pour Chart.js
+    const dish = dishes_in_orders_data.map(data => data.dish);
+    const orders_count = dishes_in_orders_data.map(data => data.orders_count);
+    // Créer le graphique
+    const ctx4 = document.getElementById('dishes_in_orders_dataChart').getContext('2d');
+    
+    const dishes_in_orders_dataChart = new Chart(ctx4, {
+        type: 'bar',  // Type de graphique (bar horizontal)
+        data: {
+            labels: dish,
+            datasets: [{
+                label: 'عدد الطلبات',
+                data: orders_count,
+                backgroundColor: [
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)',
+                    'rgb(255, 99, 132)',
+                    'rgb(75, 192, 192)',
+                    'rgb(153, 102, 255)',
+                ],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',  // This will make the bars horizontal
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'الاكثر طلبا',
+                    font: {
+                        size: 20,
+                        weight: 'bold',
+                        family: 'Arial',
+                    },
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: false,
+                    }
+                },
+                y: {
+                    title: {
+                        display: false,
+                    }
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}
